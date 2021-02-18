@@ -1,0 +1,36 @@
+  beo_source:
+    alias: Beo
+    sequence:
+      - service: script.turn_on
+        data_template:
+          entity_id: >
+            {% if is_state('input_select.beo_mode', 'Radio') %}
+              script.beo_radio
+            {% elif is_state('input_select.beo_mode', 'Tape') %}
+              script.beo_tape
+            {% elif is_state('input_select.beo_mode', 'Auxiliary') %}
+              script.beo_aux
+            {% endif %}
+
+  beo_radio:
+    alias: Radio
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "beo/src"
+          payload: "radio"
+  beo_tape:
+    alias: Tape
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "beo/src"
+          payload: "tape"
+  beo_aux:
+    alias: Aux
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "beo/src"
+          payload: "aux"
+

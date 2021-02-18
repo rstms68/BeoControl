@@ -1,0 +1,3 @@
+media_player.beosound_century:
+  device_class: tv
+  source_list: [Radio,Tape,Auxiliary]

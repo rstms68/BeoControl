@@ -1,0 +1,143 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+homeassistant:
+  customize: !include customize.yaml
+
+mqtt:
+  broker: 192.168.0.163
+  port: 1883
+
+fan:
+  - platform: mqtt 
+    name: "Zwift Fan"  
+    state_topic: "zwiftfan/state"
+    speed_state_topic: "zwiftfan/state"
+    speed_command_topic: "zwiftfan/speed"
+    qos: 0
+    payload_low_speed: "1"
+    payload_medium_speed: "2"
+    payload_high_speed: "3"
+    command_topic: "zwiftfan/speed"
+    payload_off: "0"
+    payload_on: "1"
+    speeds:
+      - low
+      - medium
+      - high
+
+light:
+  - platform: mqtt
+    name: "TimerLed" 
+    state_topic: "beo_eye/led1"
+    command_topic: "beo_eye/led1/cmd"
+    qos: 0
+    payload_on: "1"
+    payload_off: "0"
+    optimistic: false
+    retain: false
+light 2:
+  - platform: mqtt
+    name: "PlayLed" 
+    state_topic: "beo_eye/led2"
+    command_topic: "beo_eye/led2/cmd"
+    qos: 0
+    payload_on: "1"
+    payload_off: "0"
+    optimistic: false
+    retain: false
+
+timer:
+  bedroom:
+    duration: "00:10:00"
+  guestroom:
+    duration: "00:10:00"
+  livingroom:
+    duration: "00:10:00"
+  diningroom:
+    duration: "00:10:00"
+  kitchen:
+    duration: "00:10:00"
+  bathroom:
+    duration: "00:10:00"
+
+
+media_player:
+  platform: universal
+  name: Beosound century
+  children:
+   - media_player.beosound_century
+  commands:
+    turn_on:
+      service: mqtt.publish
+      data:
+        topic: "beo/src"
+        payload: "radio"
+    turn_off:
+      service: mqtt.publish
+      data:
+        topic: "beo/src"
+        payload: "off"
+    select_source:
+      service: mqtt.publish
+      data:
+        topic: "beo/src"
+        payload: >-
+                  {% if (source == "Radio") %}
+                     radio
+                  {% elif (source == "Tape") %}
+                     tape
+                  {% elif (source == "Auxiliary") %}
+                     aux
+                  {% endif %}
+  attributes:
+    state: switch.beo_switch
+    source: input_select.beo_mode
+    source_list: input_select.beo_mode | options
+
+input_select:
+  beo_mode:
+    name: Beo Mode
+    options:
+      - "Radio"
+      - "Tape"
+      - "Auxiliary"
+
+    icon: mdi:radio
+
+switch:
+  - platform: mqtt
+    unique_id: beo_switch
+    name: "Beo switch"
+    state_topic: "beo/state"
+    command_topic: "beo/set"
+    payload_on: "ON"
+    payload_off: "OFF"
+    state_on: "ON"
+    state_off: "OFF"
+    optimistic: false
+    qos: 0
+
+homekit:
+- filter:
+    include_domains:
+      - fan
+    include_entities:
+      - light.timerled
+      - light.playled
+      - media_player.beosound_century
+  entity_config:
+    media_player.beosound_century:
+      feature_list:
+        - feature: on_off
+- name: HASS Bridge
+  port: 56332
+  
