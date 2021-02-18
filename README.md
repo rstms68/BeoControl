@@ -11,7 +11,7 @@ I have used the pro micro because of it small size. If you also want to fit a ba
 
 You can also use an ESP8266 directly like in [BeoButton](https://github.com/styppen/BeoButton), but you still need to supply power to it. I have it connected to a RaspberryPi and then I communicate with them via serial using a Python script, which runs as a service. When configuring the service, I used [these](https://gist.github.com/emxsys/a507f3cad928e66f6410e7ac28e2990f) instructions.
 
-You can these remotes:
+You can use these remotes:
 - Beolink 1000
 - Beo4
 
